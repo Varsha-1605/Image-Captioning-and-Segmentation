@@ -1,99 +1,68 @@
-import torch
-import torchvision
-from transformers import BlipProcessor, BlipForConditionalGeneration
-from PIL import Image
-import numpy as np
 import cv2
-import os
+import gradio as gr
+import numpy as np
+import torch
+from PIL import Image
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# Load YOLOv8 segmentation model
+model = torch.hub.load('ultralytics/yolov8', 'yolov8x-seg')
 
-# Load pre-trained models once
-processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
-blip_model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base").to(device)
-maskrcnn = torchvision.models.detection.maskrcnn_resnet50_fpn(pretrained=True).to(device)
-maskrcnn.eval()
-deeplab = torchvision.models.segmentation.deeplabv3_resnet101(pretrained=True).to(device)
-deeplab.eval()
+def format_detections(results):
+    """Format detections in your specified style"""
+    detections = []
+    for cls, conf in zip(results[0].boxes.cls, results[0].boxes.conf):
+        class_name = model.names[int(cls)]
+        detections.append(f"{class_name} {conf:.2f}")
+    
+    # Format to match your example layout
+    formatted = ""
+    for i in range(0, len(detections), 3):
+        line = "  ".join(detections[i:i+3])
+        formatted += line + "\n"
+    return formatted.strip()
 
-def process_image(image_path, save_path=None):
-    pil_image = Image.open(image_path).convert("RGB")
-    img_cv = np.array(pil_image)
-    # Caption
-    inputs = processor(pil_image, return_tensors="pt").to(device)
-    out = blip_model.generate(**inputs)
-    caption = processor.decode(out[0], skip_special_tokens=True)
-    # Instance Segmentation
-    transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
-    image = transform(pil_image).to(device)
-    pred_instance = maskrcnn([image])[0]
-    instance_mask_display = np.zeros_like(img_cv, dtype=np.uint8)
-    num_instances = len(pred_instance["masks"])
-    colors = [
-        [0, 255, 0], [255, 0, 0], [0, 0, 255], [255, 255, 0], [255, 0, 255], [0, 255, 255],
-        [128, 0, 128], [128, 128, 0], [0, 128, 128], [128, 128, 128]
-    ]
-    img_with_boundaries = img_cv.copy()
-    object_features = []
-    for j in range(num_instances):
-        score = pred_instance["scores"][j].item()
-        if score < 0.7:
-            continue
-        mask = pred_instance["masks"][j, 0].detach().cpu().numpy()
-        mask = (mask > 0.5).astype(np.uint8)
-        label_id = pred_instance["labels"][j].item()
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        cv2.drawContours(img_with_boundaries, contours, -1, (255, 0, 0), 2)
-        area = int(np.sum(mask))
-        y_indices, x_indices = np.where(mask)
-        bbox = [0, 0, 0, 0]
-        if len(x_indices) > 0 and len(y_indices) > 0:
-            x_min, x_max = int(x_indices.min()), int(x_indices.max())
-            y_min, y_max = int(y_indices.min()), int(y_indices.max())
-            bbox = [x_min, y_min, x_max, y_max]
-        object_features.append({
-            'label_id': label_id,
-            'score': float(score),
-            'area': area,
-            'bbox': bbox
-        })
-        for c in range(3):
-            instance_mask_display[:, :, c] = np.where(mask == 1, colors[j % len(colors)][c], instance_mask_display[:, :, c])
-    # Save result image
-    if save_path:
-        cv2.imwrite(save_path, cv2.cvtColor(img_with_boundaries, cv2.COLOR_RGB2BGR))
-    return caption, object_features, save_path
+def analyze_image(input_img):
+    img = np.array(input_img)
+    results = model(img)
+    
+    # Left Panel: Instance Segmentation
+    seg_plot = results[0].plot(conf=True, labels=True, boxes=True)
+    seg_plot = cv2.cvtColor(seg_plot, cv2.COLOR_BGR2RGB)
+    
+    # Right Panel: Formatted detections
+    detections_text = format_detections(results)
+    
+    # Metrics
+    metrics = {
+        "Total Objects": len(results[0].boxes),
+        "Average Confidence": f"{results[0].boxes.conf.mean():.2f}",
+        "Class Distribution": {model.names[int(cls)]: int(sum(results[0].boxes.cls == cls)) 
+                             for cls in torch.unique(results[0].boxes.cls)}
+    }
+    
+    return (
+        Image.fromarray(seg_plot),  # Left
+        detections_text,            # Right-top
+        metrics                     # Right-bottom
+    )
 
-def process_video(video_path, output_path):
-    cap = cv2.VideoCapture(video_path)
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    out = None
-    frame_count = 0
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
-        temp_path = 'temp_frame.jpg'
-        cv2.imwrite(temp_path, frame)
-        caption, features, _ = process_image(temp_path)
-        processed_frame = cv2.imread(temp_path)
-        if out is None:
-            h, w, _ = processed_frame.shape
-            out = cv2.VideoWriter(output_path, fourcc, 20.0, (w, h))
-        out.write(processed_frame)
-        frame_count += 1
-    cap.release()
-    out.release()
-    os.remove('temp_frame.jpg')
-    return output_path, frame_count
+with gr.Blocks() as demo:
+    gr.Markdown("# Instance Segmentation Analyzer")
+    
+    with gr.Row():
+        with gr.Column():
+            img_input = gr.Image(type="pil")
+        
+        with gr.Column():
+            with gr.Row():
+                left_output = gr.Image(label="Segmentation Result")
+                right_output = gr.Textbox(label="Detections", lines=6)
+            metrics_output = gr.Json(label="Segmentation Metrics")
 
-def process_webcam_frame(frame_bytes):
-    nparr = np.frombuffer(frame_bytes, np.uint8)
-    frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    temp_path = 'temp_webcam.jpg'
-    cv2.imwrite(temp_path, frame)
-    caption, features, _ = process_image(temp_path)
-    processed_frame = cv2.imread(temp_path)
-    _, buffer = cv2.imencode('.jpg', processed_frame)
-    os.remove(temp_path)
-    return buffer.tobytes(), caption, features
+    img_input.change(
+        fn=analyze_image,
+        inputs=img_input,
+        outputs=[left_output, right_output, metrics_output]
+    )
+
+demo.launch()
