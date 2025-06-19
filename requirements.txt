@@ -1,8 +1,8 @@
 torch>=1.12
 ultralytics>=8.0.0
-opencv-python
-scikit-learn
-pillow
-gradio>=4.0
-numpy
-scipy
+opencv-python>=4.5.0
+scikit-learn>=1.0.0
+pillow>=9.0.0
+streamlit>=1.0.0
+numpy>=1.20.0
+scipy>=1.7.0

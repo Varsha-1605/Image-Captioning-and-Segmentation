@@ -1,5 +1,5 @@
 import cv2
-import gradio as gr
+import streamlit as st
 import numpy as np
 import torch
 from PIL import Image
@@ -9,7 +9,11 @@ from sklearn.metrics import (jaccard_score, f1_score,
 from scipy.spatial.distance import directed_hausdorff
 
 # Load YOLOv8 segmentation model
-model = torch.hub.load('ultralytics/yolov8', 'yolov8x-seg').to('cuda' if torch.cuda.is_available() else 'cpu')
+@st.cache_resource
+def load_model():
+    return torch.hub.load('ultralytics/yolov8', 'yolov8x-seg').to('cuda' if torch.cuda.is_available() else 'cpu')
+
+model = load_model()
 
 def calculate_boundary_iou(mask1, mask2, boundary_width=2):
     """Calculate Boundary IoU between two masks"""
@@ -81,7 +85,7 @@ def process_image(input_img):
     img = np.array(input_img)
     results = model(img)
     
-    # Visualization panels (unchanged)
+    # Visualization panels
     left_img = img.copy()
     if results[0].masks is not None:
         for mask in results[0].masks:
@@ -103,31 +107,31 @@ def process_image(input_img):
         metrics
     )
 
-# Enhanced Gradio Interface
-with gr.Blocks(theme=gr.themes.Soft()) as demo:
-    gr.Markdown("## 🧪 Advanced Segmentation Metrics Analyzer")
-    
-    with gr.Row():
-        with gr.Column():
-            img_input = gr.Image(type="pil", label="Input Image")
-            btn = gr.Button("Analyze", variant="primary")
-        
-        with gr.Column():
-            with gr.Tabs():
-                with gr.TabItem("Visual Results"):
-                    with gr.Row():
-                        gr.Image(label="Segmentation Mask", interactive=False)
-                        gr.Image(label="Detection Result", interactive=False)
-                
-                with gr.TabItem("Detailed Metrics"):
-                    gr.Json(label="Segmentation Metrics", interactive=False)
-    
-    btn.click(
-        fn=process_image,
-        inputs=img_input,
-        outputs=[gr.Image(update="Segmentation Mask"),
-                 gr.Image(update="Detection Result"),
-                 gr.Json(update="Segmentation Metrics")]
-    )
+# Streamlit UI
+st.title("🧪 Advanced Segmentation Metrics Analyzer")
 
-demo.launch()
+uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+
+if uploaded_file is not None:
+    input_img = Image.open(uploaded_file)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.image(input_img, caption="Input Image", use_column_width=True)
+    
+    if st.button("Analyze", type="primary"):
+        seg_img, det_img, metrics = process_image(input_img)
+        
+        tab1, tab2 = st.tabs(["Visual Results", "Detailed Metrics"])
+        
+        with tab1:
+            st.subheader("Segmentation Mask")
+            st.image(seg_img, use_column_width=True)
+            
+            st.subheader("Detection Result")
+            st.image(det_img, use_column_width=True)
+        
+        with tab2:
+            st.subheader("Segmentation Metrics")
+            st.json(metrics)
