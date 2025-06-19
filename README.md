@@ -8,8 +8,3 @@ A Streamlit application for analyzing segmentation performance with YOLOv8, prov
 - Comprehensive segmentation metrics (IoU, Dice, Accuracy, etc.)
 - Boundary-aware metrics
 
-## Installation
-```bash
-git clone https://github.com/yourusername/segmentation-metrics-app.git
-cd segmentation-metrics-app
-pip install -r requirements.txtfor
