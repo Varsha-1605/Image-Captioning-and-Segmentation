@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perceptra AI: Intelligent Vision. Secure Insights. Real-time Understanding.</title>
+<style>
+    /* Global Reset and Base Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        line-height: 1.6;
+        color: #E5E7EB;
+        overflow-x: hidden;
+        background: #0B1121;
+        font-weight: 400;
+        letter-spacing: -0.01em;
+    }
+
+    /* Hero Section */
+    .hero {
+        height: 100vh;
+        background: linear-gradient(135deg, #0B1121 0%, #1E293B 50%, #334155 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+    }
+    
+    .hero-content {
+        text-align: center;
+        z-index: 2;
+        position: relative;
+        max-width: 1000px;
+        padding: 0 2rem;
+    }
+    
+    .hero h1 {
+        font-size: clamp(2.5rem, 5vw, 4.5rem);
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: #FFFFFF;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+    }
+    
+    .hero p {
+        font-size: clamp(1.1rem, 2vw, 1.3rem);
+        color: #94A3B8;
+        margin-bottom: 3rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        font-weight: 400;
+        line-height: 1.7;
+    }
+    
+    .cta-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: inherit;
+        letter-spacing: -0.01em;
+    }
+    
+    .btn-primary {
+        background: #3B82F6;
+        color: #FFFFFF;
+        box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.25);
+    }
+    
+    .btn-primary:hover {
+        background: #2563EB;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.35);
+    }
+    
+    .btn-secondary {
+        background: transparent;
+        color: #E5E7EB;
+        border: 1px solid #374151;
+    }
+    
+    .btn-secondary:hover {
+        background: #374151;
+        border-color: #4B5563;
+        transform: translateY(-1px);
+    }
+    
+    /* Navigation */
+    .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background: rgba(11, 17, 33, 0.8);
+        backdrop-filter: blur(20px);
+        z-index: 1000;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 2rem;
+    }
+    
+    .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #FFFFFF;
+        letter-spacing: -0.02em;
+    }
+    
+    .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+    }
+    
+    .nav-links a {
+        color: #94A3B8;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s ease;
+        font-size: 0.95rem;
+    }
+    
+    .nav-links a:hover {
+        color: #FFFFFF;
+    }
+    
+    /* Demo Section */
+    .demo-section, .features-section, .metrics-section, .research-section {
+        padding: 6rem 0;
+        background: #0B1121;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+    
+    .section-title {
+        text-align: center;
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #FFFFFF;
+        letter-spacing: -0.02em;
+    }
+    
+    .section-subtitle {
+        text-align: center;
+        font-size: 1.1rem;
+        color: #94A3B8;
+        margin-bottom: 4rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .demo-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: start;
+    }
+    
+    /* Cards */
+    .upload-area.flask-form-container h3 {
+        color:#feca57;
+    }
+
+    .upload-area.flask-form-container, .results-panel, .feature-card, .metric-card, .research-card {
+        background: #1E293B;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        padding: 2.5rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    
+    /* .upload-area.flask-form-container:hover, .results-panel:hover, .feature-card:hover, .research-card:hover {
+        border-color: #475569;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    } */
+.upload-area.flask-form-container:hover, .results-panel:hover, .feature-card:hover, .research-card:hover {
+    transform: translateY(-7px); /* Consistent lift */
+    border-color: #3B82F6; /* Accent blue border */
+    box-shadow: 
+        0 12px 30px -5px rgba(0, 0, 0, 0.2), /* Main lift shadow */
+        0 0 20px rgba(59, 130, 246, 0.4); /* Subtle blue glow */ /* NEW */
+}
+    .flask-form-container h3, .results-panel h3 {
+        font-size: 1.5rem;
+        color: #FFFFFF;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        text-align: center;
+    }
+    
+    .flask-form-container p, .results-panel p {
+        color: #94A3B8;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .flask-file-input {
+        display: block;
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #374151;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        background-color: #111827;
+        color: #E5E7EB;
+        transition: border-color 0.2s ease;
+    }
+    
+    .flask-file-input:hover {
+        border-color: #4B5563;
+    }
+    
+    .flask-file-input::file-selector-button {
+        background-color: #3B82F6;
+        color: #FFFFFF;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-right: 1rem;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
+    }
+    
+    .flask-file-input::file-selector-button:hover {
+        background-color: #2563EB;
+    }
+    
+    .flask-submit-btn {
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: #3B82F6;
+        color: #FFFFFF;
+        box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.25);
+    }
+    
+    .flask-submit-btn:hover {
+        background: #2563EB;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.35);
+    }
+    
+    .flask-result-box {
+        background: #111827;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border-left: 4px solid #3B82F6;
+        margin-top: 2rem;
+        text-align: left;
+    }
+    
+    .flask-result-box h3 {
+        font-size: 1.25rem;
+        color: #FFFFFF;
+        margin-bottom: 1rem;
+        text-align: center;
+        font-weight: 600;
+    }
+    
+    .flask-result-box p {
+        font-size: 1rem;
+        color: #D1D5DB;
+        line-height: 1.6;
+        word-wrap: break-word;
+    }
+    
+    .flask-uploaded-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Flash Messages */
+    .flash-message {
+        padding: 1rem 1.5rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        text-align: center;
+    }
+    
+    .flash-success {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: #22C55E;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    
+    .flash-error {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #EF4444;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    /* Tabs */
+    .tabs {
+        display: flex;
+        border-bottom: 1px solid #334155;
+        margin-bottom: 2rem;
+    }
+    
+    .tab {
+        padding: 1rem 1.5rem;
+        cursor: pointer;
+        font-weight: 500;
+        color: #94A3B8;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s ease;
+        font-size: 0.95rem;
+    }
+    
+    .tab.active {
+        color: #3B82F6;
+        border-color: #3B82F6;
+    }
+    
+    .tab:hover:not(.active) {
+        color: #FFFFFF;
+    }
+    
+    .tab-content {
+        display: none;
+    }
+    
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Video Captioning Section */
+    .video-captioning-section {
+        padding: 6rem 0;
+        background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+        text-align: center;
+        margin: 4rem 0;
+        border-radius: 16px;
+    }
+    
+    .video-captioning-section h2 {
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #FFFFFF;
+        letter-spacing: -0.02em;
+    }
+    
+    .video-captioning-section p {
+        font-size: 1.1rem;
+        color: #94A3B8;
+        margin-bottom: 2rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.7;
+    }
+    
+    .video-cta-btn {
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #3B82F6;
+        color: #FFFFFF;
+        box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.25);
+    }
+    
+    .video-cta-btn:hover {
+        background: #2563EB;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.35);
+    }
+    
+    /* Features Grid */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+    
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        display: block;
+        color: #3B82F6;
+        text-align: center;
+    }
+    
+    .feature-card h3 {
+        font-size: 1.25rem;
+        color: #feca57;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        text-align: center;
+    }
+    
+    .feature-card p {
+        color: whitesmoke;
+        text-align: center;
+        line-height: 1.6;
+    }
+    
+    /* Architecture Section */
+    .architecture-section {
+        padding: 6rem 0;
+        background: #111827;
+    }
+    
+    .architecture-viz {
+        background: #1E293B;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        padding: 3rem;
+        margin-top: 3rem;
+    }
+    
+    .network-diagram-group {
+        margin-bottom: 3rem;
+        padding: 2rem;
+        border: 1px solid #374151;
+        border-radius: 12px;
+        background: #111827;
+    }
+    
+    .network-diagram-group h4 {
+        color: #3B82F6;
+        margin-bottom: 2rem;
+        font-size: 1.5rem;
+        text-align: center;
+        font-weight: 600;
+    }
+    
+    .network-diagram {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 1.5rem 0;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+    
+    .network-node {
+        background: #1E293B;
+        border: 1px solid #334155;
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        min-width: 150px;
+        flex-grow: 1;
+    }
+    
+    .network-node:hover {
+        background: #334155;
+        border-color: #475569;
+        transform: translateY(-2px);
+    }
+    
+    .network-node h4 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        color: #feca57;
+        font-weight: 600;
+    }
+    
+    .network-node p {
+        font-size: 0.875rem;
+        color: whitesmoke;
+    }
+    
+    .arrow {
+        font-size: 1.5rem;
+        color: #3B82F6;
+        flex-shrink: 0;
+        margin: 0 0.5rem;
+    }
+    
+    /* Metrics Grid */
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+    
+    .metric-card {
+        text-align: center;
+        padding: 2.5rem 2rem;
+    }
+    
+    .metric-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #3B82F6;
+        margin-bottom: 0.5rem;
+        line-height: 1;
+    }
+    
+    .metric-label {
+        color: #feca57;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+    
+    /* Research Grid */
+    .research-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+    
+    .research-card h3 {
+        color: #feca57;
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+
+    }
+    
+    .research-card p {
+        color: whitesmoke;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+    
+    .research-card .btn {
+        background: #3B82F6;
+        color: #FFFFFF;
+        box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.25);
+    }
+    
+    .research-card .btn:hover {
+        background: #2563EB;
+        box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.35);
+    }
+    
+        /* Footer */
+        .footer {
+            background: #111827;
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: #feca57;
+            font-weight: 700;
+            font-size: 1.3rem;
+            
+        }
+
+        /* Footer links */
+        .footer-section p a {
+            color: white; /* Muted grey for text, consistent with other footer text */
+            text-decoration: none;
+            transition: color 0.3s ease; /* Smooth transition for hover effect */
+        }
+
+        .footer-section p a:hover {
+            color: #E74C3C; /* Professional red on hover */
+        }
+        
+        .social-links {
+            display: flex;
+            flex-direction: column; /* Stacks the h3 and the new div vertically */
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            
+        }
+        .social-links h3 {
+            color: #feca57;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+        
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: #3B82F6;
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .social-icons-row {
+            display: flex;         /* Makes the icons themselves display in a row */
+            justify-content: center; /* Centers the icons within their new div */
+            gap: 1rem;             /* Space between the icons */
+        }
+        .social-link:hover {
+            transform: scale(1.1) rotate(360deg);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .demo-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .network-diagram {
+                flex-direction: column;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Processing Animation */
+        .processing {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #374151;
+            border-top: 3px solid #3B82F6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+    /* Modal and 3D content */
+    .modal-content-3d {
+        width: 100%;
+        height: 500px;
+        background-color: #111827;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .modal-content-3d canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+    
+    /* Segmentation results */
+    .segmentation-results-display {
+        background: #111827;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border-left: 4px solid #3B82F6;
+        margin-top: 2rem;
+        text-align: left;
+    }
+    
+    .segmentation-results-display h4 {
+        font-size: 1.25rem;
+        color: #FFFFFF;
+        margin-bottom: 1rem;
+        text-align: center;
+        font-weight: 600;
+    }
+    
+    .segmentation-results-display ul {
+        list-style-type: none;
+        padding: 0;
+        margin-top: 1rem;
+    }
+    
+    .segmentation-results-display li {
+        background-color: rgba(59, 130, 246, 0.1);
+        margin-bottom: 0.5rem;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        color: #E5E7EB;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    
+    .segmentation-results-display li span {
+        font-weight: 600;
+        color: #FFFFFF;
+    }
+    
+    /* Utility classes */
+    .text-center { text-align: center; }
+    .text-left { text-align: left; }
+    .text-right { text-align: right; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-2 { margin-top: 0.5rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-4 { margin-top: 1rem; }
+</style>
+
+
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- OrbitControls for camera interaction -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/controls/OrbitControls.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Perceptra AI</div>
+            <ul class="nav-links">
+                <li><a href="#demo">Live Demo</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#metrics">Performance</a></li>
+                <li><a href="#research">Research</a></li>
+                <li><a href="/logout">Logout</a></li> {# Added Logout link #}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Perceptra AI: Unlocking Visual Intelligence</h1>
+            <p >Transforming static images and live video streams into actionable insights. 
+                Experience custom-built AI for intelligent captioning, precise segmentation, and real-time visual understanding, 
+                all powered by advanced, secure technology.</p>
+            <div class="cta-buttons">
+                <a href="#demo" class="btn btn-primary">
+                    🚀 Try Live Demo
+                </a>
+                <a href="#architecture" class="btn btn-secondary">
+                    🧠 Explore Architecture
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section (Image Captioning & Segmentation) -->
+    <section id="demo" class="demo-section">
+        <div class="container">
+            <h2 class="section-title">Visual Intelligence Studio</h2>
+            <div class="demo-container">
+                <!-- Flask Image Captioning Form -->
+                <div class="upload-area flask-form-container">
+                    <h3>Upload Your Image for Analysis</h3>
+                    <p>Drag & drop an image or click to browse</p>
+
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <div class="mb-4">
+                                {% for category, message in messages %}
+                                    <div class="flash-message flash-{{ category }}">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+
+                    <form action="/predict" method="post" enctype="multipart/form-data">
+                        <input id="imageInput" name="file" type="file" accept="image/*" required class="flask-file-input">
+                        <p style="font-size: 0.9em; color: #777; margin-top: 0.5rem; margin-bottom: 1rem;">PNG, JPG, JPEG, GIF formats allowed.</p>
+                        <button type="submit" class="flask-submit-btn">
+                            Analyze Image
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Results Panel -->
+                <div class="results-panel">
+                    <div class="tabs">
+                        <div class="tab {% if not segmentation_image_url %}active{% endif %}" data-tab="caption">📝 Caption</div>
+                        <div class="tab {% if segmentation_image_url %}active{% endif %}" data-tab="segment">🎯 Segmentation</div>
+                       
+                    </div>
+                    
+                    <div class="tab-content {% if not segmentation_image_url %}active{% endif %}" id="caption">
+                        <h3>Generated Caption</h3>
+                        <div id="captionResult">
+                            {% if caption %}
+                                <div class="flask-result-box">
+                                    <h3>Your Uploaded Image:</h3>
+                                    {% if uploaded_image_url %}
+                                        <img src="{{ uploaded_image_url }}" alt="Uploaded Image" class="flask-uploaded-image">
+                                    {% endif %}
+                                    <h3>Generated Caption:</h3>
+                                    <p>"{{ caption }}"</p>
+                                </div>
+                            {% else %}
+                                <p style="color: #666; font-style: italic;">Upload an image to see the AI-generated caption...</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content {% if segmentation_image_url %}active{% endif %}" id="segment">
+                        <h3>Segmentation Results</h3>
+                        <div id="segmentResult">
+                            {% if segmentation_image_url %}
+                                <div class="segmentation-results-display">
+                                    <h4>Segmented Image:</h4>
+                                    <img src="{{ segmentation_image_url }}" alt="Segmented Image" class="flask-uploaded-image">
+                                    {% if segmentation_metrics.num_objects is defined %}
+                                        <h4>Detected Objects ({{ segmentation_metrics.num_objects }}):</h4>
+                                        <ul>
+                                            {% for obj in segmentation_metrics.detected_objects %}
+                                                <li><span>{{ obj }}</span></li>
+                                            {% endfor %}
+                                            {% if segmentation_metrics.error %}
+                                                <li style="color: red;">Error: {{ segmentation_metrics.error }}</li>
+                                            {% endif %}
+                                        </ul>
+                                    {% elif segmentation_metrics.status %}
+                                        <p style="color: #666;">{{ segmentation_metrics.status }}</p>
+                                    {% else %}
+                                         <p style="color: #666; font-style: italic;">No segmentation results available. Upload an image to analyze.</p>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <p style="color: #666; font-style: italic;">Segmentation masks will appear here after image analysis.</p>
+                                <div style="text-align: center; margin-top: 1rem;">
+                                    <img src="https://placehold.co/400x250/cccccc/333333?text=Segmentation+Preview" alt="Segmentation Placeholder" class="flask-uploaded-image">
+                                    <p style="margin-top: 0.5rem; font-size: 0.9em; color: #777;">Placeholder image until live segmentation is ready.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- Dedicated LiveSense AI: Real-time Video Captioning Section -->
+    <section id="video-captioning" class="video-captioning-section">
+        <div class="container">
+            <h2 class="section-title">LiveSense AI: Real-time Video Understanding</h2>
+            <p>Step into the future of dynamic vision. Our dedicated LiveSense AI platform offers instant, intelligent descriptions of live video feeds, transforming real-world events into actionable insights.</p>
+            <a href="http://127.0.0.1:8000/" target="_blank" class="video-cta-btn">
+                Launch LiveSense AI Application 🚀
+            </a>
+        </div>
+    </section>
+    <!-- END Dedicated LiveSense AI: Real-time Video Captioning Section -->
+
+
+<!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <h2 class="section-title">Core Capabilities & Innovation</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">👁️</span>
+                    <h3>Intelligent Image Captioning</h3>
+                    <p>Our custom-built deep learning model accurately describes the content of static images, transforming visual data into rich, human-like narratives.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">🎯</span>
+                   <h3>Precision Image Segmentation</h3>
+                    <p>Leveraging advanced techniques, we precisely identify and segment objects within images, providing detailed insights into scene composition and object boundaries.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">⚡</span>
+                    <h3>Real-time Dynamic Vision</h3>
+                    <p>Experience instantaneous understanding of live video streams. Our optimized AI processes webcam feeds in real-time, providing continuous, intelligent descriptions and tracking of evolving scenes as they happen.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">🔐</span>
+                    <h3>Robust Biometric Security</h3>
+                    <p>Safeguard access to sensitive AI capabilities with our multi-layered authentication. Featuring secure facial recognition and traditional email/password login, we ensure unparalleled user protection and data integrity.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">🧠</span>
+                    <h3>Proprietary Deep Learning Engine</h3>
+                    <p>Driven by custom-engineered neural architectures, including bespoke CNN-LSTM for captioning and advanced segmentation networks. Developed entirely from scratch for optimized performance and unique insights.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">📊</span>
+                    <h3>Performance & Operational Intelligence</h3>
+                    <p>Designed for high-throughput and low-latency operations, our system features adaptive processing, intelligent caching, and comprehensive performance analytics, ensuring scalable and reliable AI service delivery.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="architecture-section">
+        <div class="container">
+            <h2 class="section-title">Perceptra AI: Integrated Vision & Security Architecture</h2>
+            <div class="architecture-viz">
+                <h3>Core AI & System Components Overview</h3>
+
+                <div class="network-diagram-group">
+                    <h4>1. Static Image Analysis Pipeline</h4>
+                    <div class="network-diagram">
+                        <div class="network-node" data-info="The entry point for static images uploaded by users.">
+                            <h4>Image Input</h4>
+                            <p>Files/URLs</p>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="network-node" data-info="Our custom-built model: ResNet50 Encoder extracts features, fed into an LSTM Decoder with Attention for generating descriptive captions.">
+                            <h4>Image Captioning Module</h4>
+                            <p>ResNet50-LSTM-Attention</p>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="network-node" data-info="Integration of the powerful YOLOv8x-seg model for accurate object detection and precise instance segmentation.">
+                            <h4>Image Segmentation Module</h4>
+                            <p>YOLOv8x-seg</p>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="network-node" data-info="Structured JSON outputs containing generated captions, identified objects, and segmentation masks.">
+                            <h4>Analyzed Output</h4>
+                            <p>Captions & Masks</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="network-diagram-group" style="margin-top: 3rem;">
+                    <h4>2. Real-time Video Intelligence (LiveSense AI)</h4>
+                    <div class="network-diagram">
+                        <div class="network-node" data-info="Captures live video streams directly from the user's webcam for instant processing.">
+                            <h4>Webcam Input</h4>
+                            <p>Live Stream</p>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="network-node" data-info="Utilizes the BLIP model for real-time video understanding, enhanced by adaptive frame sampling, batch processing, and intelligent caching.">
+                            <h4>Dynamic Vision Core</h4>
+                            <p>BLIP & Optimizations</p>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="network-node" data-info="Provides continuous, contextually rich descriptions of evolving scenes, displayed instantly in the UI.">
+                            <h4>Live Caption Stream</h4>
+                            <p>Real-time Output</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="network-diagram-group" style="margin-top: 3rem;">
+                    <h4>3. Secure Identity & Application Layer</h4>
+                    <div class="network-diagram">
+                        <div class="network-node" data-info="Supports user authentication via email/password and advanced facial recognition, capturing biometric data securely.">
+                            <h4>User Inputs</h4>
+                            <p>Biometrics & Passwords</p>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="network-node" data-info="The core Flask backend orchestrates all AI services, handles API requests, and manages data flow.">
+                            <h4>Backend Orchestration</h4>
+                            <p>Flask API & Logic</p>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="network-node" data-info="Securely stores user credentials, face encodings, and manages authentication states using SQLAlchemy.">
+                            <h4>User Database</h4>
+                            <p>SQLite/SQLAlchemy</p>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="network-node" data-info="The user-facing web interface built with HTML, CSS, and JavaScript, providing interactive demos and real-time displays.">
+                            <h4>Frontend Interface</h4>
+                            <p>UI/UX</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 4rem;">
+                    <!-- <button class="btn btn-primary" onclick="showArchitectureDetails()">
+                        🔍 Explore Conceptual 3D Model
+                    </button> -->
+                    <p style="color: rgba(255,255,255,0.7); font-size: 0.9em; margin-top: 1rem;">
+                        Hover over nodes for details. The 3D model provides a conceptual visualization of a core AI pipeline within our system.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Metrics Section -->
+  <!-- Metrics Section -->
+    <section id="metrics" class="metrics-section">
+        <div class="container">
+            <h2 class="section-title">Performance Metrics</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="bleuScore">10.49%</div>
+                    <div class="metric-label">BLEU-4 Score</div>
+                    <p class="metric-subtext">For custom, scratch-built model</p>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-value" id="ciderScore">1.03</div>
+                    <div class="metric-label">CIDEr Score</div>
+                    <p class="metric-subtext">Measures agreement with human captions</p>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-value" id="meteorScore">31.58%</div>
+                    <div class="metric-label">METEOR Score</div>
+                    <p class="metric-subtext">Balances precision and recall of unigrams</p>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-value" id="inferenceLatency">27.7 ms</div>
+                    <div class="metric-label">Avg. Inference Latency</div>
+                    <p class="metric-subtext">Time to process one image</p>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-value" id="processingFps">36.1 FPS</div>
+                    <div class="metric-label">Processing Throughput</div>
+                    <p class="metric-subtext">Frames processed per second for live image</p>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-value" id="perplexity" style="font-size: 2rem;">12.43</div>
+                    <div class="metric-label">Perplexity</div>
+                    <p class="metric-subtext">Lower indicates better language model prediction</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Research Section -->
+    <section id="research" class="research-section">
+        <div class="container">
+            <h2 class="section-title">Research & Innovation</h2>
+            <div class="research-grid">
+                <div class="research-card">
+                    <h3>📚 Technical Documentation</h3>
+                    <p>Complete research paper with mathematical formulations, architecture details, and experimental results.</p>
+                    <but 
+                    class="btn btn-primary" 
+                    style="margin-top: 1rem;"
+                    onclick="window.location.href='https://drive.google.com/file/d/1ZQI_pVLR_lAcSW5O3NehBns1IfJGg1Or/view'">
+                    Read Paper
+                </button>
+                </div>
+                
+                <!-- <div class="research-card">
+                    <h3>🔬 Ablation Studies</h3>
+                    <p>Comprehensive analysis of different architectural choices and their impact on model performance.</p>
+                    <button class="btn btn-primary" style="margin-top: 1rem;">View Studies</button>
+                </div> -->
+                
+                <div class="research-card">
+                    <h3>💻 Code Repository</h3>
+                    <p>Open-source implementation with detailed comments, training scripts, and deployment guides.</p>
+                    <button class="btn btn-primary" style="margin-top: 1rem;">GitHub Repo</button>
+                </div>
+                
+                <div class="research-card">
+                    <h3>📊 Training Insights</h3>
+                    <p>Interactive dashboard showing training progress, loss curves, and hyperparameter optimization results.</p>
+                    <button class="btn btn-primary"
+                            style="margin-top: 1rem;"
+                            onclick="window.location.href='https://app.powerbi.com/groups/51a1905f-91db-4fd8-9fed-a6a2b80353f8/reports/3c053b13-7c35-41d9-a447-3dd410ddbe39/9600b075c14d1c7d079a?experience=power-bi'">
+                    Training Dashboard
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Perceptra AI</h3> {# Updated Brand Name #}
+                    <p style="color: #ccc; margin-top: 0.5rem; font-weight: 500;"><b>Intelligent Vision. Secure Insights. Real-time Understanding.</b></p> {# Added Tagline with styling #}
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <p><a href="#demo"><b>Live Demo</b></a></p>
+                    <p><a href="#architecture"><b>Architecture</b></a></p>
+                    <p><a href="#research"><b>Research</b></a></p>
+                    <p><a href="/main_app"><b>App Home</b></a></p> {# Added link to main app #}
+                </div>
+
+                <div class="footer-section">
+                    <h3>Developer</h3>
+                    <p><b>Varsh Dewangan</b></p> {# Your Name #}
+                    <p><b>Data Scientist</b></p> {# Specific role and context #}
+                </div>
+                
+            </div>
+            
+            <div class="social-links">
+                <h3>Connect with me!</h3>
+                <div class="social-icons-row"> {# This new div will hold your icons in a row #}
+                    <a href="mailto:varshadewangan1605@gmail.com" class="social-link">📧</a> {# Link to your email #}
+                    <a href="https://www.linkedin.com/in/varsha-dewangan-197983256/" target="_blank" class="social-link">💼</a> {# Link to your LinkedIn #}
+                    <a href="https://github.com/Varsha-1605" target="_blank" class="social-link">🐙</a> {# Link to your GitHub #}
+                    <a href="https://www.instagram.com/varshadewangan454/" target="_blank" class="social-link">📸</a> {# Replaced Twitter with Instagram #}
+                </div>
+            </div>
+            
+            <p style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #333; color: #ccc;">
+                <b>© 2024 Perceptra AI. All rights reserved.</b>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Tab functionality (Existing, Modified to clear for Flask output)
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs and contents
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Show corresponding content
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+
+                // Clear previous results when switching tabs, except for the Flask-driven caption or segment tab
+                // The Flask-driven content for caption and segment should persist until a new upload
+                if (tabId !== 'caption' && tabId !== 'segment') {
+                    // Only clear the analysis tab
+                    document.getElementById('analysisResult').innerHTML = '<p style="color: #666; font-style: italic;">Detailed analysis coming soon from backend...</p>';
+                }
+            });
+        });
+
+        // Auto-select the segmentation tab if segmentation_image_url is present after a Flask render
+        document.addEventListener('DOMContentLoaded', function() {
+            // Use a slightly different check for Flask template variables which might be 'None' string
+            const segmentationImageUrl = "{{ segmentation_image_url }}"; 
+            const captionContentExists = document.getElementById('captionResult').innerText.trim() !== 'Upload an image to see the AI-generated caption...' && document.getElementById('captionResult').innerText.trim() !== '';
+
+            if (segmentationImageUrl && segmentationImageUrl !== 'None') { 
+                // Deactivate current active tab
+                document.querySelector('.tab.active')?.classList.remove('active');
+                document.querySelector('.tab-content.active')?.classList.remove('active');
+
+                // Activate segmentation tab and content
+                document.querySelector('.tab[data-tab="segment"]').classList.add('active');
+                document.getElementById('segment').classList.add('active');
+            } else if (captionContentExists) {
+                // If no segmentation but caption exists, activate caption tab
+                document.querySelector('.tab.active')?.classList.remove('active');
+                document.querySelector('.tab-content.active')?.classList.remove('active');
+
+                document.querySelector('.tab[data-tab="caption"]').classList.add('active');
+                document.getElementById('caption').classList.add('active');
+            }
+            // If neither has content, the default set in HTML (caption tab active) will apply
+        });
+
+
+        // The original JavaScript for file upload simulation (processImage, showResults, drag/drop)
+        // is REMOVED as Flask handles the actual file upload and rendering.
+        // The HTML form now directly submits to Flask.
+
+        // Smooth scrolling for navigation links (Existing)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Navbar scroll effect (Existing)
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.style.background = 'rgba(0,0,0,0.9)';
+            } else {
+                navbar.style.background = 'rgba(255,255,255,0.1)';
+            }
+        });
+
+        // Animate metrics when in view (Existing)
+        function animateMetrics() {
+            const metrics = document.querySelectorAll('.metric-value');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const target = entry.target;
+                        const finalValue = parseFloat(target.textContent);
+                        let currentValue = 0;
+                        const increment = finalValue / 50;
+                        
+                        const timer = setInterval(() => {
+                            currentValue += increment;
+                            if (currentValue >= finalValue) {
+                                currentValue = finalValue;
+                                clearInterval(timer);
+                            }
+                            target.textContent = currentValue.toFixed(1);
+                        }, 30);
+                        
+                        observer.unobserve(target);
+                    }
+                });
+            });
+            
+            metrics.forEach(metric => observer.observe(metric));
+        }
+
+        // Architecture details modal (UPDATED for 3D)
+        let scene, camera, renderer, controls, animationFrameId;
+
+        function showArchitectureDetails() {
+            // Prevent multiple modals if clicked rapidly
+            if (document.querySelector('.modal')) {
+                return;
+            }
+
+            const modal = document.createElement('div');
+            modal.className = 'modal'; // Add a class for styling
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                backdrop-filter: blur(10px);
+                transition: opacity 0.3s ease;
+                opacity: 0; /* Start hidden for fade-in */
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 20px; padding: 2rem; max-width: 90%; max-height: 90vh; overflow: hidden; position: relative; display: flex; flex-direction: column;">
+                    <button id="closeModalBtn" style="position: absolute; top: 1rem; right: 1rem; border: none; background: none; font-size: 2rem; cursor: pointer; color: #666;">×</button>
+                    
+                    <h2 style="color: #667eea; margin-bottom: 1.5rem; text-align: center; font-size: 2rem;">3D Architecture Visualization</h2>
+                    
+                    <div id="architectureCanvasContainer" class="modal-content-3d" style="flex-grow: 1; min-height: 300px; display: flex; justify-content: center; align-items: center;">
+                        <canvas id="architectureCanvas" style="display: block;"></canvas>
+                        <p id="loadingText" style="color: #ccc; text-align: center; position: absolute;">Loading 3D model...</p>
+                    </div>
+                    
+                    <div style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 1rem; margin-top: 1.5rem; color: #666;">
+                        <div style="flex: 1; min-width: 250px;">
+                            <h3 style="color: #667eea; margin-bottom: 0.5rem;">Caption Branch</h3>
+                            <ul style="padding-left: 1.5rem; list-style-type: disc;">
+                                <li>CNN Feature Extractor</li>
+                                <li>Attention Mechanism</li>
+                                <li>LSTM Decoder</li>
+                            </ul>
+                        </div>
+                        <div style="flex: 1; min-width: 250px;">
+                            <h3 style="color: #667eea; margin-bottom: 0.5rem;">Segmentation Branch</h3>
+                            <ul style="padding-left: 1.5rem; list-style-type: disc;">
+                                <li>U-Net Architecture</li>
+                                <li>Skip Connections</li>
+                                <li>Multi-scale Features</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p style="text-align: center; margin-top: 1rem; font-size: 0.9em; color: #555;">
+                        Click and drag to rotate the 3D model. Scroll to zoom.
+                    </p>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+
+            // Fade in modal
+            setTimeout(() => modal.style.opacity = '1', 10);
+
+            // Setup 3D scene after modal is in DOM
+            const canvasContainer = document.getElementById('architectureCanvasContainer');
+            const canvas = document.getElementById('architectureCanvas');
+            const loadingText = document.getElementById('loadingText');
+
+
+            // 1. Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a1a); // Dark background for the 3D space
+
+            // 2. Camera
+            camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000); // Set initial aspect to 1, will be updated
+            camera.position.set(0, 0, 10); // Adjust camera position for better view
+
+            // 3. Renderer
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            // setCanvasSize(); // Initial size setup - call it after objects are added for more reliable dimensions
+
+            // 4. Lights
+            const ambientLight = new THREE.AmbientLight(0x404040); // soft white light
+            scene.add(ambientLight);
+            const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.7);
+            directionalLight1.position.set(5, 5, 5).normalize();
+            scene.add(directionalLight1);
+            const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
+            directionalLight2.position.set(-5, -5, -5).normalize();
+            scene.add(directionalLight2);
+
+            // 5. Controls
+            controls = new OrbitControls(camera, renderer.domElement); 
+            controls.enableDamping = true; // an animation loop is required when damping is enabled
+            controls.dampingFactor = 0.05;
+            controls.screenSpacePanning = false;
+            controls.minDistance = 5;
+            controls.maxDistance = 20;
+
+            // --- Create Model Architecture Elements ---
+
+            // Colors
+            const encoderColor = 0x667eea; // Blue
+            const attentionColor = 0xfeca57; // Yellow
+            const decoderColor = 0x764ba2; // Purple
+            const segmentationColor = 0x4ecdc4; // Teal
+            const arrowColor = 0xcccccc; // Light grey
+
+            const boxGeometry = new THREE.BoxGeometry(2, 2, 2);
+            const cylinderGeometry = new THREE.CylinderGeometry(0.5, 0.5, 2, 32);
+            const coneGeometry = new THREE.ConeGeometry(0.7, 1.5, 32);
+
+            // Encoder (CNN)
+            const encoderMaterial = new THREE.MeshPhongMaterial({ color: encoderColor });
+            const encoder = new THREE.Mesh(boxGeometry, encoderMaterial);
+            encoder.position.set(-4, 0, 0);
+            scene.add(encoder);
+
+            // Attention Mechanism
+            const attentionMaterial = new THREE.MeshPhongMaterial({ color: attentionColor, emissive: attentionColor, emissiveIntensity: 0.3 });
+            const attention = new THREE.Mesh(coneGeometry, attentionMaterial);
+            attention.rotation.z = -Math.PI / 2; // Point towards decoder
+            attention.position.set(-1.5, 0, 0); // Between encoder and decoder
+            scene.add(attention);
+
+            // Decoder (LSTM)
+            const decoderMaterial = new THREE.MeshPhongMaterial({ color: decoderColor });
+            const decoder = new THREE.Mesh(boxGeometry, decoderMaterial);
+            decoder.position.set(1.5, 1, 0); // Position slightly up for caption branch
+            scene.add(decoder);
+
+            // Segmentation Branch (U-Net inspired - another block)
+            const segmentation = new THREE.Mesh(boxGeometry, new THREE.MeshPhongMaterial({ color: segmentationColor }));
+            segmentation.position.set(1.5, -1, 0); // Position slightly down for segmentation branch
+            scene.add(segmentation);
+
+            // Arrows (data flow)
+            const arrowMaterial = new THREE.MeshBasicMaterial({ color: arrowColor });
+            const arrow1 = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.2, 0.2), arrowMaterial); // Encoder to Attention
+            arrow1.position.set(-2.75, 0, 0);
+            scene.add(arrow1);
+
+            const arrow2 = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.2, 0.2), arrowMaterial); // Attention to Decoder
+            arrow2.position.set(0, 1, 0);
+            arrow2.rotation.z = Math.PI / 4; // Angle it towards decoder
+            scene.add(arrow2);
+
+            const arrow3 = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.2, 0.2), arrowMaterial); // Shared Feature to Segmentation
+            arrow3.position.set(0, -1, 0);
+            arrow3.rotation.z = -Math.PI / 4; // Angle it towards segmentation
+            scene.add(arrow3);
+
+            // Output Caption Arrow/Block
+            const outputCaption = new THREE.Mesh(new THREE.BoxGeometry(1, 0.8, 0.8), decoderMaterial);
+            outputCaption.position.set(4, 1, 0);
+            scene.add(outputCaption);
+            const arrow4 = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.2, 0.2), arrowMaterial);
+            arrow4.position.set(2.75, 1, 0);
+            scene.add(arrow4);
+
+            // Output Segmentation Arrow/Block
+            const outputSegmentation = new THREE.Mesh(new THREE.BoxGeometry(1, 0.8, 0.8), new THREE.MeshPhongMaterial({ color: segmentationColor }));
+            outputSegmentation.position.set(4, -1, 0);
+            scene.add(outputSegmentation);
+            const arrow5 = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.2, 0.2), arrowMaterial);
+            arrow5.position.set(2.75, -1, 0);
+            scene.add(arrow5);
+
+            // --- Simple Text Labels (using CanvasTexture for better readability) ---
+            function createTextSprite(message, color, fontSize = 60) {
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                context.font = `${fontSize}px Arial`;
+                context.fillStyle = color;
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+                const metrics = context.measureText(message);
+                canvas.width = metrics.width + 20;
+                canvas.height = fontSize + 20;
+                context.font = `${fontSize}px Arial`;
+                context.fillStyle = color;
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+                context.fillText(message, canvas.width / 2, canvas.height / 2);
+
+                const texture = new THREE.CanvasTexture(canvas);
+                const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+                const sprite = new THREE.Sprite(spriteMaterial);
+                // Adjust scale based on text length and desired size in 3D
+                sprite.scale.set(canvas.width * 0.01, canvas.height * 0.01, 1);
+                return sprite;
+            }
+
+            const encoderLabel = createTextSprite("Encoder", "#ffffff");
+            encoderLabel.position.set(encoder.position.x, encoder.position.y + 1.5, encoder.position.z);
+            scene.add(encoderLabel);
+
+            const attentionLabel = createTextSprite("Attention", "#ffffff");
+            attentionLabel.position.set(attention.position.x, attention.position.y + 1.2, attention.position.z);
+            scene.add(attentionLabel);
+
+            const decoderLabel = createTextSprite("Decoder", "#ffffff");
+            decoderLabel.position.set(decoder.position.x, decoder.position.y + 1.5, decoder.position.z);
+            scene.add(decoderLabel);
+
+            const segmentationLabel = createTextSprite("Segmentation", "#ffffff");
+            segmentationLabel.position.set(segmentation.position.x, segmentation.position.y - 1.5, segmentation.position.z);
+            scene.add(segmentationLabel);
+
+            const outputCaptionLabel = createTextSprite("Caption", "#ffffff");
+            outputCaptionLabel.position.set(outputCaption.position.x, outputCaption.position.y + 0.8, outputCaption.position.z);
+            scene.add(outputCaptionLabel);
+
+            const outputSegmentationLabel = createTextSprite("Masks", "#ffffff");
+            outputSegmentationLabel.position.set(outputSegmentation.position.x, outputSegmentation.position.y - 0.8, outputSegmentation.position.z);
+            scene.add(outputSegmentationLabel);
+
+// Inside the showArchitectureDetails function
+
+            // Set canvas size and hide loading text after all elements are potentially rendered
+            setTimeout(() => {
+                // Ensure the container is ready and has dimensions
+                const canvasContainer = document.getElementById('architectureCanvasContainer');
+                const loadingText = document.getElementById('loadingText');
+
+                if (canvasContainer && canvasContainer.clientWidth > 0) {
+                    const width = canvasContainer.clientWidth;
+                    const height = canvasContainer.clientHeight;
+
+                    renderer.setSize(width, height);
+                    camera.aspect = width / height;
+                    camera.updateProjectionMatrix();
+                    
+                    // Hide the loading text now that the canvas is sized
+                    if (loadingText) {
+                        loadingText.style.display = 'none';
+                    }
+                    
+                    // Start the animation loop
+                    animate(); 
+                } else {
+                    // Fallback or error for if the container isn't ready
+                    console.error("3D canvas container not ready or has no size.");
+                    if (loadingText) {
+                        loadingText.innerText = "Error loading 3D model.";
+                    }
+                }
+            }, 100); // 100ms delay to allow the DOM to render the modal
+
+
+            // 6. Animation Loop
+            function animate() {
+                animationFrameId = requestAnimationFrame(animate);
+                controls.update(); // only required if controls.enableDamping or controls.autoRotate are set to true
+                renderer.render(scene, camera);
+            }
+
+            // Cleanup function for modal close
+            const closeModal = () => {
+                cancelAnimationFrame(animationFrameId); // Stop the animation loop
+                if (controls) controls.dispose(); // Dispose controls to free up event listeners
+                if (renderer) renderer.dispose(); // Dispose renderer resources
+                modal.remove(); // Remove modal from DOM
+                window.removeEventListener('resize', setCanvasSize); // Remove resize listener
+                // Clear scene to free up memory (optional but good practice)
+                scene.traverse(object => {
+                    if (!object.isMesh) return;
+                    object.geometry.dispose();
+                    if (object.material.isMaterial) {
+                        cleanMaterial(object.material);
+                    } else {
+                        // an array of materials
+                        for (const material of object.material) cleanMaterial(material);
+                    }
+                });
+                scene = null;
+                camera = null;
+                renderer = null;
+                controls = null;
+                animationFrameId = null;
+            };
+
+            document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) { // Close when clicking outside the inner content
+                    closeModal();
+                }
+            });
+
+            const setCanvasSize = () => {
+                if (canvasContainer && camera && renderer) {
+                    const width = canvasContainer.clientWidth;
+                    const height = canvasContainer.clientHeight;
+                    renderer.setSize(width, height);
+                    camera.aspect = width / height;
+                    camera.updateProjectionMatrix();
+                }
+            };
+            window.addEventListener('resize', setCanvasSize);
+        }
+
+        // Helper to dispose materials (for cleanup)
+        function cleanMaterial(material) {
+            for (const key of Object.keys(material)) {
+                const value = material[key];
+                if (value && typeof value === 'object' && 'dispose' in value) {
+                    value.dispose();
+                }
+            }
+        }
+
+
+        // Network node hover effects (Existing)
+        document.querySelectorAll('.network-node').forEach(node => {
+            node.addEventListener('mouseenter', function() {
+                const info = this.getAttribute('data-info');
+                if (info) {
+                    const tooltip = document.createElement('div');
+                    tooltip.style.cssText = `
+                        position: absolute;
+                        background: rgba(0,0,0,0.9);
+                        color: white;
+                        padding: 1rem;
+                        border-radius: 8px;
+                        font-size: 0.9rem;
+                        max-width: 200px;
+                        z-index: 1000;
+                        top: -60px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        pointer-events: none;
+                    `;
+                    tooltip.textContent = info;
+                    tooltip.className = 'tooltip';
+                    this.style.position = 'relative';
+                    this.appendChild(tooltip);
+                }
+            });
+            
+            node.addEventListener('mouseleave', function() {
+                const tooltip = this.querySelector('.tooltip');
+                if (tooltip) {
+                    tooltip.remove();
+                }
+            });
+        });
+
+        // Initialize animations (Existing)
+        document.addEventListener('DOMContentLoaded', function() {
+            animateMetrics();
+            
+            // Add pulse animation to CTA buttons
+            document.querySelectorAll('.btn-primary').forEach(btn => {
+                setInterval(() => {
+                    btn.classList.add('pulse');
+                    setTimeout(() => btn.classList.remove('pulse'), 1000);
+                }, 5000);
+            });
+        });
+
+        // Add particle animation to hero section (Existing)
+        function createParticles() {
+            const hero = document.querySelector('.hero');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position: absolute;
+                    width: 2px;
+                    height: 2px;
+                    background: rgba(255,255,255,0.5);
+                    border-radius: 50%;
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 100}%;
+                    animation: float ${5 + Math.random() * 10}s infinite linear;
+                    pointer-events: none;
+                `;
+                hero.appendChild(particle);
+            }
+        }
+
+        // Initialize particle animation (Existing)
+        createParticles();
+
+        // Add typing effect to hero text (Existing)
+        function typeWriter(element, text, speed = 50) {
+            let i = 0;
+            element.innerHTML = '';
+            function typing() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(typing, speed);
+                }
+            }
+            typing();
+        }
+
+        // Mobile menu toggle (if needed) (Existing)
+        function toggleMobileMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+
+        // Add mobile styles (already in your original HTML, moved to style tag) (Existing)
+        const mobileStyles = document.createElement('style');
+        mobileStyles.textContent = `
+            @media (max-width: 768px) {
+                .nav-links.active {
+                    display: flex;
+                    flex-direction: column;
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    width: 100%;
+                    background: rgba(0,0,0,0.9);
+                    padding: 2rem;
+                    backdrop-filter: blur(20px);
+                }
+                
+                .nav-links.active a {
+                    padding: 1rem 0;
+                    border-bottom: 1px solid rgba(255,255,255,0.1);
+                }
+            }
+        `;
+        document.head.appendChild(mobileStyles);
+    </script>
+</body>
+</html>

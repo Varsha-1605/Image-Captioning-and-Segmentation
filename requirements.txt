@@ -1,0 +1,15 @@
+torch
+torchvision
+Pillow
+numpy
+matplotlib
+tqdm
+nltk
+rouge-score
+pycocotools
+pycocoevalcap @ git+https://github.com/salaniz/pycocoevalcap.git
+opencv-python
+flask
+flask-cors
+flask-sqlalchemy
+ultralytics

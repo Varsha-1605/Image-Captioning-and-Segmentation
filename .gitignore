@@ -1,0 +1,43 @@
+# --- General Python Files ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.idea/
+.vscode/
+
+# --- Operating System Files ---
+.DS_Store
+.Trash-1000
+Thumbs.db
+
+# --- Log and Data Files ---
+*.log
+*.sqlite
+data/
+output/
+models/
+static/uploads/
+evaluation_results/
+instance/
+text_files/
+
+# --- Dependencies and Installations ---
+.installed.cfg
+.eggs/
+*.egg
+*.egg-info/
+dist/
+build/
+
+# --- PyTorch & Machine Learning Specific ---
+# Pytorch checkpoint files
+*.pth
+*.pt
+# Weights and models
+weights/
+runs/

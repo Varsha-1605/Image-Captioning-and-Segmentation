@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionCraft AI - Custom Image Captioning & Segmentation</title>
+    <style>
+        /* All original CSS from website_for_image_captioning.txt */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+            background-color: #f0f2f5; /* Added a light background for overall page */
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="50" r="0.5" fill="rgba(255,255,255,0.2)"/></svg>') repeat;
+            animation: float 20s infinite linear;
+        }
+        
+        @keyframes float {
+            0% { transform: translate(-50%, -50%); }
+            100% { transform: translate(-30%, -30%); }
+        }
+        
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff, #f0f8ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(255,255,255,0.5); }
+            to { text-shadow: 0 0 30px rgba(255,255,255,0.8); }
+        }
+        
+        .hero p {
+            font-size: 1.5rem;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 2rem;
+            max-width: 800px;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            box-shadow: 0 10px 30px rgba(255,107,107,0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255,107,107,0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-3px);
+        }
+        
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #feca57;
+        }
+        
+        /* Demo Section */
+        .demo-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .demo-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+        
+        .upload-area {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 3px dashed #ddd;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-area:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 25px 80px rgba(0,0,0,0.15);
+        }
+        
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102,126,234,0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .upload-area:hover::before {
+            left: 100%;
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        .results-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            min-height: 400px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 2rem;
+        }
+        
+        .tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            color: #667eea;
+            border-color: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Features Section */
+        .features-section {
+            padding: 5rem 0;
+            background: #fff;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            transform: skewX(-15deg);
+            transition: right 0.5s ease;
+        }
+        
+        .feature-card:hover::before {
+            right: 100%;
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Architecture Section */
+        .architecture-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+        }
+        
+        .architecture-viz {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-top: 3rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .network-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .network-node {
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-width: 150px;
+        }
+        
+        .network-node:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        .arrow {
+            font-size: 2rem;
+            color: #feca57;
+        }
+        
+        /* Metrics Section */
+        .metrics-section {
+            padding: 5rem 0;
+            background: #f8f9fa;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .metric-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-weight: 600;
+        }
+        
+        /* Research Section */
+        .research-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+        }
+        
+        .research-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .research-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .research-card:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-5px);
+        }
+        
+        /* Footer */
+        .footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: #feca57;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .social-link:hover {
+            transform: scale(1.1) rotate(360deg);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .demo-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .network-diagram {
+                flex-direction: column;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Processing Animation */
+        .processing {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        /* --- NEW: Custom Styles for Flask Integration to blend with existing design --- */
+        /* These styles override/add to existing ones to make the Flask form look like part of the UI */
+        .flask-form-container {
+            background: white; /* Match demo-container's background */
+            border-radius: 20px; /* Match demo-container's border-radius */
+            padding: 3rem; /* Match demo-container's padding */
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1); /* Match demo-container's shadow */
+            text-align: center;
+            border: 3px dashed #ddd; /* Match upload-area's dashed border */
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Match hover effects of original upload-area */
+        .flask-form-container:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 25px 80px rgba(0,0,0,0.15);
+        }
+        .flask-form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102,126,234,0.1), transparent);
+            transition: left 0.5s;
+        }
+        .flask-form-container:hover::before {
+            left: 100%;
+        }
+
+        .flask-form-container h3 {
+            font-size: 1.8rem; /* Consistent heading size */
+            color: #333; /* Darker text for contrast */
+            margin-bottom: 1.5rem;
+        }
+
+        .flask-file-input {
+            display: block; /* Ensure it takes full width */
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            background-color: #fff; /* White background */
+        }
+        /* Style the file input button (browser-specific styling) */
+        .flask-file-input::file-selector-button {
+            background-color: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .flask-file-input::file-selector-button:hover {
+            background-color: #5567d4;
+        }
+
+        .flask-submit-btn {
+            /* Using btn-primary styles for consistency */
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            box-shadow: 0 10px 30px rgba(255,107,107,0.3);
+        }
+        .flask-submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255,107,107,0.4);
+        }
+
+        .flask-result-box {
+            background: #f8f9fa; /* Light background for results */
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea; /* Accent border */
+            margin-top: 2rem;
+            text-align: left; /* Align text to left for readability */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .flask-result-box h3 {
+            font-size: 1.6rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+            text-align: center; /* Center heading for results */
+        }
+
+        .flask-result-box p {
+            font-size: 1.1rem;
+            color: #333;
+            line-height: 1.5;
+            word-wrap: break-word; /* Ensure long captions wrap */
+        }
+
+        .flask-uploaded-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Flash Messages */
+        .flash-message {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            text-align: center;
+        }
+        .flash-success {
+            background-color: #d1e7dd; /* Light green */
+            color: #0f5132; /* Dark green */
+            border-color: #badbcc;
+        }
+        .flash-error {
+            background-color: #f8d7da; /* Light red */
+            color: #721c24; /* Dark red */
+            border-color: #f5c2c7;
+        }
+
+        /* Video Captioning Section (New) */
+        .video-captioning-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #e0f2f7 0%, #a7d9eb 100%); /* Light blue gradient */
+            text-align: center;
+            margin-top: 3rem; /* Space from previous section */
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        .video-captioning-section h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1e3c72; /* Dark blue from your architecture section */
+        }
+        .video-captioning-section p {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .video-cta-btn {
+            /* Using btn-primary styles for consistency */
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(45deg, #2196F3, #667eea); /* Blue gradient */
+            color: white;
+            box-shadow: 0 10px 30px rgba(33,150,243,0.3);
+        }
+        .video-cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(33,150,243,0.4);
+        }
+
+    </style>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">VisionCraft AI</div>
+            <ul class="nav-links">
+                <li><a href="#demo">Live Demo</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#metrics">Performance</a></li>
+                <li><a href="#research">Research</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>VisionCraft AI</h1>
+            <p>Revolutionary Image Captioning & Segmentation built from scratch using custom neural architectures. No pretrained models, pure innovation.</p>
+            <div class="cta-buttons">
+                <a href="#demo" class="btn btn-primary">
+                    🚀 Try Live Demo
+                </a>
+                <a href="#architecture" class="btn btn-secondary">
+                    🧠 Explore Architecture
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section (Image Captioning & Segmentation) -->
+    <section id="demo" class="demo-section">
+        <div class="container">
+            <h2 class="section-title">Interactive AI Demo</h2>
+            <div class="demo-container">
+                <!-- Flask Image Captioning Form -->
+                <div class="upload-area flask-form-container">
+                    <h3>Upload Your Image for Captioning</h3>
+                    <p>Drag & drop an image or click to browse</p>
+
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <div class="mb-4">
+                                {% for category, message in messages %}
+                                    <div class="flash-message flash-{{ category }}">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+
+                    <form action="/predict" method="post" enctype="multipart/form-data">
+                        <input id="imageInput" name="file" type="file" accept="image/*" required class="flask-file-input">
+                        <p style="font-size: 0.9em; color: #777; margin-top: 0.5rem; margin-bottom: 1rem;">PNG, JPG, JPEG, GIF formats allowed.</p>
+                        <button type="submit" class="flask-submit-btn">
+                            Generate Caption
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Results Panel -->
+                <div class="results-panel">
+                    <div class="tabs">
+                        <div class="tab active" data-tab="caption">📝 Caption</div>
+                        <div class="tab" data-tab="segment">🎯 Segmentation</div>
+                        <div class="tab" data-tab="analysis">📊 Analysis</div>
+                    </div>
+                    
+                    <div class="tab-content active" id="caption">
+                        <h3>Generated Caption</h3>
+                        <div id="captionResult">
+                            {% if caption %}
+                                <div class="flask-result-box">
+                                    <h3>Your Uploaded Image:</h3>
+                                    {% if uploaded_image_url %}
+                                        <img src="{{ uploaded_image_url }}" alt="Uploaded Image" class="flask-uploaded-image">
+                                    {% endif %}
+                                    <h3>Generated Caption:</h3>
+                                    <p>"{{ caption }}"</p>
+                                    <!-- Placeholder for confidence score if you integrate it later from Flask -->
+                                    <!-- <div style="margin-top: 1rem; text-align: center;">Confidence: XX.X%</div> -->
+                                </div>
+                            {% else %}
+                                <p style="color: #666; font-style: italic;">Upload an image to see the AI-generated caption...</p>
+                            {% endif %}
+                        </div>
+                        <div id="confidenceScore" style="margin-top: 1rem;"></div>
+                    </div>
+                    
+                    <div class="tab-content" id="segment">
+                        <h3>Segmentation Results (Partner's Work)</h3>
+                        <div id="segmentResult">
+                            <p style="color: #666; font-style: italic;">Segmentation masks will appear here once integrated.</p>
+                            <div style="text-align: center; margin-top: 1rem;">
+                                <img src="https://placehold.co/400x250/cccccc/333333?text=Segmentation+Preview" alt="Segmentation Placeholder" class="flask-uploaded-image">
+                                <p style="margin-top: 0.5rem; font-size: 0.9em; color: #777;">Placeholder image until live segmentation is ready.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="analysis">
+                        <h3>Technical Analysis</h3>
+                        <div id="analysisResult">
+                            <p style="color: #666; font-style: italic;">Detailed analysis coming soon from backend...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW: Video Captioning Section -->
+    <section id="video-captioning" class="video-captioning-section">
+        <div class="container">
+            <h2 class="section-title">Real-time Video Captioning</h2>
+            <p>Experience live descriptions of video streams, providing instant understanding of dynamic scenes. Click the button below to explore our dedicated video captioning demo.</p>
+            <a href="#" class="video-cta-btn" onclick="alert('Video captioning feature will be integrated soon!')">
+                Go to Video Captioning 🎥
+            </a>
+        </div>
+    </section>
+    <!-- END NEW: Video Captioning Section -->
+
+    <!-- Features Section (Existing) -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <h2 class="section-title">Exceptional Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🧠</span>
+                    <h3>Custom Neural Architecture</h3>
+                    <p>Built entirely from scratch without any pretrained models. Custom CNN+LSTM for captioning and U-Net variant for segmentation.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">⚡</span>
+                    <h3>Real-time Processing</h3>
+                    <p>Optimized inference pipeline capable of processing images in under 2 seconds with efficient memory management.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">🎯</span>
+                    <h3>Dual Task Mastery</h3>
+                    <p>Seamlessly integrated captioning and segmentation with shared feature extraction for enhanced performance.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">📊</span>
+                    <h3>Advanced Analytics</h3>
+                    <p>Comprehensive performance metrics, attention visualization, and detailed error analysis capabilities.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">🔧</span>
+                    <h3>Interactive Tools</h3>
+                    <p>Web-based interface with real-time processing, batch operations, and detailed result visualization.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">🚀</span>
+                    <h3>Production Ready</h3>
+                    <p>Dockerized deployment, REST API, comprehensive testing, and scalable cloud infrastructure.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="architecture-section">
+        <div class="container">
+            <h2 class="section-title">Custom Architecture</h2>
+            <div class="architecture-viz">
+                <h3>Neural Network Flow</h3>
+                <div class="network-diagram">
+                    <div class="network-node" data-info="Custom CNN feature extractor with attention mechanism">
+                        <h4>Feature Extraction</h4>
+                        <p>Custom CNN</p>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="network-node" data-info="Shared feature maps for both tasks">
+                        <h4>Shared Features</h4>
+                        <p>Multi-scale</p>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="network-node" data-info="LSTM with attention for caption generation">
+                        <h4>Caption Branch</h4>
+                        <p>LSTM + Attention</p>
+                    </div>
+                </div>
+                
+                <div class="network-diagram">
+                    <div class="network-node" data-info="U-Net inspired architecture for segmentation">
+                        <h4>Segmentation Branch</h4>
+                        <p>Custom U-Net</p>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="network-node" data-info="Multi-task loss function optimization">
+                        <h4>Loss Integration</h4>
+                        <p>Multi-task Loss</p>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="network-node" data-info="Final output processing and confidence scoring">
+                        <h4>Output Processing</h4>
+                        <p>Post-processing</p>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button class="btn btn-primary" onclick="showArchitectureDetails()">
+                        🔍 Explore 3D Architecture
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Metrics Section -->
+    <section id="metrics" class="metrics-section">
+        <div class="container">
+            <h2 class="section-title">Performance Metrics</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="bleuScore">78.4</div>
+                    <div class="metric-label">BLEU-4 Score</div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-value" id="miouScore">82.1</div>
+                    <div class="metric-label">mIoU Score (%)</div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-value" id="inferenceTime">1.8</div>
+                    <div class="metric-label">Inference Time (s)</div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-value" id="modelSize">45.2</div>
+                    <div class="metric-label">Model Size (MB)</div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-value" id="accuracy">85.7</div>
+                    <div class="metric-label">Overall Accuracy (%)</div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-value" id="fps">12</div>
+                    <div class="metric-label">Processing FPS</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Research Section -->
+    <section id="research" class="research-section">
+        <div class="container">
+            <h2 class="section-title">Research & Innovation</h2>
+            <div class="research-grid">
+                <div class="research-card">
+                    <h3>📚 Technical Documentation</h3>
+                    <p>Complete research paper with mathematical formulations, architecture details, and experimental results.</p>
+                    <button class="btn btn-primary" style="margin-top: 1rem;">Read Paper</button>
+                </div>
+                
+                <div class="research-card">
+                    <h3>🔬 Ablation Studies</h3>
+                    <p>Comprehensive analysis of different architectural choices and their impact on model performance.</p>
+                    <button class="btn btn-primary" style="margin-top: 1rem;">View Studies</button>
+                </div>
+                
+                <div class="research-card">
+                    <h3>💻 Code Repository</h3>
+                    <p>Open-source implementation with detailed comments, training scripts, and deployment guides.</p>
+                    <button class="btn btn-primary" style="margin-top: 1rem;">GitHub Repo</button>
+                </div>
+                
+                <div class="research-card">
+                    <h3>📊 Training Insights</h3>
+                    <p>Interactive dashboard showing training progress, loss curves, and hyperparameter optimization results.</p>
+                    <button class="btn btn-primary" style="margin-top: 1rem;">Training Dashboard</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>VisionCraft AI</h3>
+                    <p>Revolutionary computer vision solutions built from scratch.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <p><a href="#demo" style="color: #ccc; text-decoration: none;">Live Demo</a></p>
+                    <p><a href="#architecture" style="color: #ccc; text-decoration: none;">Architecture</a></p>
+                    <p><a href="#research" style="color: #ccc; text-decoration: none;">Research</a></p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Developer</h3>
+                    <p>Built with passion during internship at Zidio Development</p>
+                    <p>Contact: your.email@example.com</p>
+                </div>
+            </div>
+            
+            <div class="social-links">
+                <a href="#" class="social-link">📧</a>
+                <a href="#" class="social-link">💼</a>
+                <a href="#" class="social-link">🐙</a>
+                <a href="#" class="social-link">🐦</a>
+            </div>
+            
+            <p style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #333; color: #ccc;">
+                © 2024 VisionCraft AI. Built with ❤️ for innovation.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Tab functionality (Existing, Modified to clear for Flask output)
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs and contents
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Show corresponding content
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+
+                // Clear previous results when switching tabs, except for the Flask-driven caption tab
+                if (tabId !== 'caption') {
+                    // Reset segmentation and analysis tabs if they were showing old data
+                    document.getElementById('segmentResult').innerHTML = '<p style="color: #666; font-style: italic;">Segmentation masks will appear here once integrated.</p><div style="text-align: center; margin-top: 1rem;"><img src="https://placehold.co/400x250/cccccc/333333?text=Segmentation+Preview" alt="Segmentation Placeholder" class="flask-uploaded-image"><p style="margin-top: 0.5rem; font-size: 0.9em; color: #777;">Placeholder image until live segmentation is ready.</p></div>';
+                    document.getElementById('analysisResult').innerHTML = '<p style="color: #666; font-style: italic;">Detailed analysis coming soon from backend...</p>';
+                }
+            });
+        });
+
+        // The original JavaScript for file upload simulation (processImage, showResults, drag/drop)
+        // is REMOVED as Flask handles the actual file upload and rendering.
+        // The HTML form now directly submits to Flask.
+
+        // Smooth scrolling for navigation links (Existing)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Navbar scroll effect (Existing)
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.style.background = 'rgba(0,0,0,0.9)';
+            } else {
+                navbar.style.background = 'rgba(255,255,255,0.1)';
+            }
+        });
+
+        // Animate metrics when in view (Existing)
+        function animateMetrics() {
+            const metrics = document.querySelectorAll('.metric-value');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const target = entry.target;
+                        const finalValue = parseFloat(target.textContent);
+                        let currentValue = 0;
+                        const increment = finalValue / 50;
+                        
+                        const timer = setInterval(() => {
+                            currentValue += increment;
+                            if (currentValue >= finalValue) {
+                                currentValue = finalValue;
+                                clearInterval(timer);
+                            }
+                            target.textContent = currentValue.toFixed(1);
+                        }, 30);
+                        
+                        observer.unobserve(target);
+                    }
+                });
+            });
+            
+            metrics.forEach(metric => observer.observe(metric));
+        }
+
+        // Architecture details modal (Existing)
+        function showArchitectureDetails() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                backdrop-filter: blur(10px);
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 20px; padding: 3rem; max-width: 800px; max-height: 80vh; overflow-y: auto; position: relative;">
+                    <button onclick="this.closest('.modal').remove()" style="position: absolute; top: 1rem; right: 1rem; border: none; background: none; font-size: 2rem; cursor: pointer; color: #666;">×</button>
+                    
+                    <h2 style="color: #667eea; margin-bottom: 2rem; text-align: center;">3D Architecture Visualization</h2>
+                    
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <div style="width: 300px; height: 200px; background: linear-gradient(45deg, #667eea, #764ba2); border-radius: 15px; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; transform-style: preserve-3d; animation: rotate3d 4s infinite linear;">
+                            🧠 Neural Network<br>3D Visualization
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+                        <div>
+                            <h3 style="color: #667eea;">Caption Branch</h3>
+                            <ul style="padding-left: 1.5rem; color: #666;">
+                                <li>CNN Feature Extractor (5 layers)</li>
+                                <li>Attention Mechanism</li>
+                                <li>LSTM Decoder (2 layers)</li>
+                                <li>Vocabulary: 10,000 words</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 style="color: #667eea;">Segmentation Branch</h3>
+                            <ul style="padding-left: 1.5rem; color: #666;">
+                                <li>U-Net Architecture</li>
+                                <li>Skip Connections</li>
+                                <li>Multi-scale Features</li>
+                                <li>21 Object Classes</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 2rem; border-radius: 10px; margin-top: 2rem;">
+                        <h3 style="color: #667eea; margin-bottom: 1rem;">Key Innovations</h3>
+                        <p style="color: #666; line-height: 1.8;">
+                            Our custom architecture implements shared feature extraction with dual-head processing, 
+                            attention-based caption generation, and efficient multi-task learning with weighted loss optimization.
+                        </p>
+                    </div>
+                </div>
+            `;
+            
+            modal.className = 'modal';
+            document.body.appendChild(modal);
+            
+            // Add rotation animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes rotate3d {
+                    0% { transform: rotateY(0deg) rotateX(10deg); }
+                    100% { transform: rotateY(360deg) rotateX(10deg); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Network node hover effects (Existing)
+        document.querySelectorAll('.network-node').forEach(node => {
+            node.addEventListener('mouseenter', function() {
+                const info = this.getAttribute('data-info');
+                if (info) {
+                    const tooltip = document.createElement('div');
+                    tooltip.style.cssText = `
+                        position: absolute;
+                        background: rgba(0,0,0,0.9);
+                        color: white;
+                        padding: 1rem;
+                        border-radius: 8px;
+                        font-size: 0.9rem;
+                        max-width: 200px;
+                        z-index: 1000;
+                        top: -60px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        pointer-events: none;
+                    `;
+                    tooltip.textContent = info;
+                    tooltip.className = 'tooltip';
+                    this.style.position = 'relative';
+                    this.appendChild(tooltip);
+                }
+            });
+            
+            node.addEventListener('mouseleave', function() {
+                const tooltip = this.querySelector('.tooltip');
+                if (tooltip) {
+                    tooltip.remove();
+                }
+            });
+        });
+
+        // Initialize animations (Existing)
+        document.addEventListener('DOMContentLoaded', function() {
+            animateMetrics();
+            
+            // Add pulse animation to CTA buttons
+            document.querySelectorAll('.btn-primary').forEach(btn => {
+                setInterval(() => {
+                    btn.classList.add('pulse');
+                    setTimeout(() => btn.classList.remove('pulse'), 1000);
+                }, 5000);
+            });
+        });
+
+        // Add particle animation to hero section (Existing)
+        function createParticles() {
+            const hero = document.querySelector('.hero');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position: absolute;
+                    width: 2px;
+                    height: 2px;
+                    background: rgba(255,255,255,0.5);
+                    border-radius: 50%;
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 100}%;
+                    animation: float ${5 + Math.random() * 10}s infinite linear;
+                    pointer-events: none;
+                `;
+                hero.appendChild(particle);
+            }
+        }
+
+        // Initialize particle animation (Existing)
+        createParticles();
+
+        // Add typing effect to hero text (Existing)
+        function typeWriter(element, text, speed = 50) {
+            let i = 0;
+            element.innerHTML = '';
+            function typing() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(typing, speed);
+                }
+            }
+            typing();
+        }
+
+        // Mobile menu toggle (if needed) (Existing)
+        function toggleMobileMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+
+        // Add mobile styles (already in your original HTML, moved to style tag) (Existing)
+        const mobileStyles = document.createElement('style');
+        mobileStyles.textContent = `
+            @media (max-width: 768px) {
+                .nav-links.active {
+                    display: flex;
+                    flex-direction: column;
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    width: 100%;
+                    background: rgba(0,0,0,0.9);
+                    padding: 2rem;
+                    backdrop-filter: blur(20px);
+                }
+                
+                .nav-links.active a {
+                    padding: 1rem 0;
+                    border-bottom: 1px solid rgba(255,255,255,0.1);
+                }
+            }
+        `;
+        document.head.appendChild(mobileStyles);
+    </script>
+</body>
+</html>

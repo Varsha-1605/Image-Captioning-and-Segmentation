@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Facial Recognition Authentication</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0B1121;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            color: #E5E7EB;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+
+        /* Animated Background - Subtle particles matching main theme */
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) { width: 60px; height: 60px; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 80px; height: 80px; left: 20%; animation-delay: 3s; }
+        .particle:nth-child(3) { width: 40px; height: 40px; left: 60%; animation-delay: 1s; }
+        .particle:nth-child(4) { width: 70px; height: 70px; left: 80%; animation-delay: 4s; }
+        .particle:nth-child(5) { width: 30px; height: 30px; left: 70%; animation-delay: 2s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+            50% { transform: translateY(-30px) rotate(180deg); opacity: 0.6; }
+        }
+
+        /* Main Container */
+        .auth-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+            background: radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+        }
+
+        .auth-container {
+            background: #1E293B;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 0;
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            overflow: hidden;
+            transform: translateY(20px);
+            animation: slideUp 0.8s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Header Section */
+        .auth-header {
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            border-bottom: 1px solid #374151;
+        }
+
+        .auth-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3B82F6, #6366F1);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
+            to { box-shadow: 0 0 20px rgba(59, 130, 246, 0.8); }
+        }
+
+        .auth-title {
+            color: #FFFFFF;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.02em;
+            transition: all 0.3s ease;
+        }
+
+        .auth-subtitle {
+            color: #94A3B8;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            background: #111827;
+            margin: 0;
+            border-bottom: 1px solid #374151;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 20px;
+            background: none;
+            border: none;
+            color: #94A3B8;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-family: inherit;
+        }
+
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3B82F6, #6366F1);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .tab-btn.active {
+            color: #FFFFFF;
+            background: #1E293B;
+        }
+
+        .tab-btn.active::before {
+            width: 100%;
+        }
+
+        .tab-btn:hover {
+            background: #1E293B;
+            color: #FFFFFF;
+        }
+
+        /* Form Content */
+        .form-content {
+            padding: 40px;
+            background: #1E293B;
+        }
+
+        .form-container {
+            position: relative;
+            min-height: 300px;
+        }
+
+        .form-panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+
+        .form-panel.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: all;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .input-wrapper {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #111827;
+            color: #E5E7EB;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-input::placeholder {
+            color: #6B7280;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3B82F6;
+            background: #111827;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6B7280;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus + .input-icon {
+            color: #3B82F6;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+            font-family: inherit;
+            letter-spacing: -0.01em;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: #3B82F6;
+            color: #FFFFFF;
+            box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: #2563EB;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.35);
+        }
+
+        .btn-secondary {
+            background: #6366F1;
+            color: #FFFFFF;
+            box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.25);
+        }
+
+        .btn-secondary:hover {
+            background: #5B21B6;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px 0 rgba(99, 102, 241, 0.35);
+        }
+
+        .btn-danger {
+            background: #EF4444;
+            color: #FFFFFF;
+            box-shadow: 0 4px 14px 0 rgba(239, 68, 68, 0.25);
+        }
+
+        .btn-danger:hover {
+            background: #DC2626;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px 0 rgba(239, 68, 68, 0.35);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            color: #6B7280;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #374151, transparent);
+        }
+
+        .divider span {
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 500;
+            background: #1E293B;
+            border-radius: 20px;
+            border: 1px solid #374151;
+        }
+
+        /* Face Auth Buttons */
+        .face-auth-section {
+            margin: 20px 0;
+
+        }
+        .face-auth-section button {
+           
+            background:#4079f4;
+        }
+
+        .face-auth-section button:hover {
+             background: #2563EB;
+        }
+
+        .face-btn-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .face-btn-group .btn {
+            flex: 1;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .face-icon {
+            font-size: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Status Messages */
+        .status-message {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-message.success {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22C55E;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .status-message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .status-message.info {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3B82F6;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        /* Webcam Section */
+        .webcam-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 17, 33, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .webcam-section.active {
+            display: flex;
+        }
+
+        .webcam-container {
+            background: #1E293B;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            animation: zoomIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .video-container {
+            position: relative;
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        #webcamVideo {
+            width: 100%;
+            height: auto;
+            max-width: 400px;
+            display: block;
+            margin: 0 auto;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        #webcamCanvas {
+            display: none;
+        }
+
+        .webcam-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .webcam-controls .btn {
+            flex: 1;
+            min-width: 140px;
+            margin-bottom: 0;
+        }
+
+        /* Loading Spinner */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 17, 33, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            color: #E5E7EB;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #374151;
+            border-top: 4px solid #3B82F6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Security Note */
+        .security-note {
+            /* background: #111827; */
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            font-size: 14px;
+            /* color: #94A3B8; */
+            text-align: center;
+            /* animation: fadeInUp 0.6s ease-out 0.5s both; */
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .security-icon {
+            color: #3B82F6;
+            margin-right: 8px;
+            font-size: 16px;
+            animation: rotate 6s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .auth-container {
+                margin: 10px;
+                border-radius: 12px;
+            }
+
+            .auth-header {
+                padding: 25px 20px;
+            }
+
+            .form-content {
+                padding: 30px 25px;
+            }
+
+            .auth-title {
+                font-size: 24px;
+            }
+
+            .face-btn-group {
+                flex-direction: column;
+            }
+
+            .webcam-controls {
+                flex-direction: column;
+            }
+
+            .webcam-controls .btn {
+                min-width: auto;
+            }
+
+            .particle {
+                opacity: 0.2;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                margin: 5px;
+            }
+
+            .tab-btn {
+                padding: 15px 10px;
+                font-size: 14px;
+            }
+
+            .form-content {
+                padding: 25px 20px;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1E293B;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #3B82F6 0%, #6366F1 100%);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #2563EB 0%, #5B21B6 100%);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Processing...</p>
+        </div>
+    </div>
+
+    <!-- Main Wrapper -->
+    <div class="auth-wrapper">
+        <div class="auth-container">
+            <!-- Header -->
+            <div class="auth-header">
+                <h1 id="authModeTitle" class="auth-title">Welcome Back</h1>
+                <p id="authSubtitle" class="auth-subtitle">Secure authentication with facial recognition</p>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button id="loginTab" class="tab-btn active">
+                    🔑 Login
+                </button>
+                <button id="registerTab" class="tab-btn">
+                    👤 Register
+                </button>
+            </div>
+
+            <!-- Form Content -->
+            <div class="form-content">
+                <!-- Flash messages from Flask are handled here -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div id="flaskStatusMessage" class="status-message">
+                            {% for category, message in messages %}
+                                <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div id="authStatusMessage" class="status-message"></div>
+                    {% endif %}
+                {% endwith %}
+
+                <div class="form-container">
+                    <!-- Login Panel -->
+                    <div id="loginPanel" class="form-panel active">
+                        <form id="loginForm">
+                            <div class="form-group">
+                                <div class="input-wrapper">
+                                    <input type="email" id="loginEmail" name="email" class="form-input" 
+                                           placeholder="Enter your email address" required>
+                                    <div class="input-icon">📧</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-wrapper">
+                                    <input type="password" id="loginPassword" name="password" class="form-input" 
+                                           placeholder="Enter your password" required>
+                                    <div class="input-icon">🔒</div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                🚀 Sign In
+                            </button>
+                        </form>
+                        
+                        <div class="divider">
+                            <span>or continue with</span>
+                        </div>
+                        
+                        <div class="face-auth-section">
+                            <button type="button" id="faceLoginBtn" class="btn btn-secondary">
+                                <span class="face-icon">👁️</span>
+                                Face Recognition
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Register Panel -->
+                    <div id="registerPanel" class="form-panel">
+                        <form id="registerForm">
+                            <div class="form-group">
+                                <div class="input-wrapper">
+                                    <input type="email" id="registerEmail" name="email" class="form-input" 
+                                           placeholder="Enter your email address" required>
+                                    <div class="input-icon">📧</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-wrapper">
+                                    <input type="password" id="registerPassword" name="password" class="form-input" 
+                                           placeholder="Create a strong password" required minlength="6">
+                                    <div class="input-icon">🔐</div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                ✨ Create Account
+                            </button>
+                        </form>
+                        
+                        <div class="divider">
+                            <span>enhance security with</span>
+                        </div>
+                        
+                        <div class="face-auth-section">
+                            <button type="button" id="faceRegisterBtn" class="btn btn-secondary">
+                                <span class="face-icon">📸</span>
+                                Setup Face ID
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Note -->
+                <div class="security-note">
+                    <span class="security-icon"></span>
+                    <!-- Your facial data is encrypted and stored locally with bank-level security  -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Webcam Section -->
+    <div id="webcamSection" class="webcam-section">
+        <div class="webcam-container">
+            <h2 style="color: white; margin-bottom: 20px;">📷 Face Recognition</h2>
+            <div class="video-container">
+                <video id="webcamVideo" autoplay muted playsinline></video>
+                <canvas id="webcamCanvas"></canvas>
+            </div>
+            
+            <div class="webcam-controls">
+                <button id="captureFaceBtn" class="btn btn-primary" style="display: none;">
+                    📸 Capture Face (0/3)
+                </button>
+                <button id="cancelWebcamBtn" class="btn btn-danger">
+                    ❌ Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
+            const authModeTitle = document.getElementById('authModeTitle');
+            const authSubtitle = document.getElementById('authSubtitle');
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            const loginPanel = document.getElementById('loginPanel');
+            const registerPanel = document.getElementById('registerPanel');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const authStatusMessage = document.getElementById('authStatusMessage'); // JS-driven message
+            const flaskStatusMessage = document.getElementById('flaskStatusMessage'); // Flask flash message container
+
+
+            const webcamSection = document.getElementById('webcamSection');
+            const webcamVideo = document.getElementById('webcamVideo');
+            const webcamCanvas = document.getElementById('webcamCanvas');
+            const captureFaceBtn = document.getElementById('captureFaceBtn');
+            const cancelWebcamBtn = document.getElementById('cancelWebcamBtn');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+
+            const faceRegisterBtn = document.getElementById('faceRegisterBtn');
+            const faceLoginBtn = document.getElementById('faceLoginBtn');
+
+            let currentStream;
+            let captureCount = 0;
+            const MAX_CAPTURES = 3;
+            let capturedImages = [];
+            let currentAuthMode = 'login'; // Track current mode for webcam behavior
+
+            // --- Utility Functions ---
+            const showMessage = (message, type = 'info') => {
+                // Clear any existing Flask messages when showing JS messages
+                if (flaskStatusMessage) {
+                    flaskStatusMessage.innerHTML = '';
+                    flaskStatusMessage.style.display = 'none';
+                }
+
+                if (message) {
+                    authStatusMessage.textContent = message;
+                    authStatusMessage.className = `status-message ${type}`;
+                    authStatusMessage.style.display = 'block';
+                } else {
+                    authStatusMessage.style.display = 'none';
+                }
+                console.log(`UI Message (${type}): ${message}`);
+            };
+
+            const showLoading = (show) => {
+                if (show) {
+                    loadingOverlay.classList.add('active');
+                } else {
+                    loadingOverlay.classList.remove('active');
+                }
+            };
+
+            const resetCapture = () => {
+                captureCount = 0;
+                capturedImages = [];
+                captureFaceBtn.textContent = `📸 Capture Face (0/${MAX_CAPTURES})`;
+            };
+
+            // --- Tab Functions ---
+            const showLoginMode = () => {
+                currentAuthMode = 'login';
+                authModeTitle.textContent = 'Welcome Back';
+                authSubtitle.textContent = 'Secure authentication with facial recognition';
+                
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                
+                loginPanel.classList.add('active');
+                registerPanel.classList.remove('active');
+                
+                showMessage(''); // Clear JS messages when changing tabs
+                hideWebcam();
+            };
+
+            const showRegisterMode = () => {
+                currentAuthMode = 'register';
+                authModeTitle.textContent = 'Join Us Today';
+                authSubtitle.textContent = 'Create your secure account with advanced biometrics';
+                
+                registerTab.classList.add('active');
+                loginTab.classList.remove('active');
+                
+                registerPanel.classList.add('active');
+                loginPanel.classList.remove('active');
+                
+                showMessage(''); // Clear JS messages when changing tabs
+                hideWebcam();
+            };
+
+            // --- Webcam Functions ---
+            const startWebcam = async () => {
+                try {
+                    console.log('Starting webcam...');
+                    resetCapture(); // Reset captures every time webcam starts
+
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { 
+                            width: { ideal: 640 }, 
+                            height: { ideal: 480 },
+                            facingMode: 'user' 
+                        } 
+                    });
+                    
+                    webcamVideo.srcObject = stream;
+                    currentStream = stream;
+                    webcamSection.classList.add('active');
+                    
+                    // Wait for video to be ready
+                    webcamVideo.onloadedmetadata = () => {
+                        console.log('Webcam ready');
+                        if (currentAuthMode === 'register') {
+                            captureFaceBtn.style.display = 'block';
+                            showMessage(`Position your face clearly in the camera. You need to capture ${MAX_CAPTURES} images.`, 'info');
+                            captureFaceBtn.textContent = `📸 Capture Face (0/${MAX_CAPTURES})`; // Reset text
+                        } else { // Login mode
+                            showMessage('Position your face clearly in the camera for recognition.', 'info');
+                            captureFaceBtn.style.display = 'none'; // No manual capture button for login
+                            // For login, capture automatically after a short delay
+                            setTimeout(() => {
+                                captureForLogin();
+                            }, 2000); // Give user 2 seconds to position face
+                        }
+                    };
+
+                } catch (error) {
+                    console.error('Error accessing webcam:', error);
+                    let errorMessage = 'Error accessing camera. Please ensure camera permissions are granted.';
+                    if (error.name === 'NotAllowedError') {
+                        errorMessage = 'Camera access denied. Please allow camera access in your browser settings.';
+                    } else if (error.name === 'NotFoundError') {
+                        errorMessage = 'No camera found. Please ensure a camera is connected and working.';
+                    }
+                    showMessage(errorMessage, 'error');
+                }
+            };
+
+            const hideWebcam = () => {
+                webcamSection.classList.remove('active');
+                captureFaceBtn.style.display = 'none';
+                if (currentStream) {
+                    currentStream.getTracks().forEach(track => track.stop());
+                    currentStream = null;
+                }
+                resetCapture(); // Also reset captures when hiding webcam
+            };
+
+            const captureImage = () => {
+                const canvas = webcamCanvas;
+                const context = canvas.getContext('2d');
+                const video = webcamVideo;
+
+                // Set canvas dimensions to match video
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+
+                // Draw current video frame to canvas
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Get base64 image data
+                const imageData = canvas.toDataURL('image/jpeg', 0.8); // 0.8 quality for smaller size
+                console.log('Image captured, data length:', imageData.length);
+                
+                return imageData;
+            };
+
+            const captureForRegister = () => {
+                if (captureCount >= MAX_CAPTURES) {
+                    console.log('Max captures already reached for registration.');
+                    return;
+                }
+
+                const imageData = captureImage();
+                if (imageData) {
+                    capturedImages.push(imageData);
+                    captureCount++;
+                    captureFaceBtn.textContent = `📸 Capture Face (${captureCount}/${MAX_CAPTURES})`;
+                    
+                    console.log(`Captured image ${captureCount}/${MAX_CAPTURES}`);
+                    
+                    if (captureCount === MAX_CAPTURES) {
+                        showMessage('All images captured! Processing registration...', 'info');
+                        captureFaceBtn.disabled = true; // Disable button after all captures
+                        setTimeout(() => submitFaceRegistration(), 500); // Small delay before submitting
+                    } else {
+                        showMessage(`Captured image ${captureCount}/${MAX_CAPTURES}. Capture ${MAX_CAPTURES - captureCount} more.`, 'success');
+                    }
+                } else {
+                    showMessage('Failed to capture image. Please try again.', 'error');
+                }
+            };
+
+            const captureForLogin = () => {
+                const imageData = captureImage();
+                if (imageData) {
+                    console.log('Image captured for login');
+                    showMessage('Image captured. Processing login...', 'info');
+                    submitFaceLogin(imageData);
+                } else {
+                    showMessage('Failed to capture image for login. Please try again.', 'error');
+                    hideWebcam(); // Close webcam on failure for login
+                }
+            };
+
+            // --- API Functions ---
+            const submitFaceRegistration = async () => {
+                showLoading(true);
+                
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                
+                if (!email || !password) {
+                    showMessage('Please enter email and password before capturing face images.', 'error');
+                    showLoading(false);
+                    captureFaceBtn.disabled = false; // Re-enable button
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    showMessage('Password must be at least 6 characters long.', 'error');
+                    showLoading(false);
+                    captureFaceBtn.disabled = false; // Re-enable button
+                    return;
+                }
+
+                try {
+                    console.log('Submitting face registration with', capturedImages.length, 'images');
+                    
+                    const response = await fetch('/face_register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            email: email,
+                            password: password,
+                            images: capturedImages
+                        })
+                    });
+
+                    const result = await response.json();
+                    console.log('Face registration response:', result);
+
+                    if (result.success) {
+                        showMessage(result.message, 'success');
+                        hideWebcam();
+                        setTimeout(() => {
+                            showLoginMode(); // Redirect to login after successful registration
+                        }, 2000);
+                    } else {
+                        showMessage(result.message, 'error');
+                        resetCapture();
+                        captureFaceBtn.disabled = false; // Re-enable button
+                        captureFaceBtn.style.display = 'block'; // Show button again
+                    }
+                } catch (error) {
+                    console.error('Face registration error:', error);
+                    showMessage('Network error during face registration. Please try again.', 'error');
+                    resetCapture();
+                    captureFaceBtn.disabled = false; // Re-enable button
+                    captureFaceBtn.style.display = 'block'; // Show button again
+                } finally {
+                    showLoading(false);
+                }
+            };
+
+            const submitFaceLogin = async (imageData) => {
+                showLoading(true);
+                
+                try {
+                    console.log('Submitting face login');
+                    
+                    const response = await fetch('/face_login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            image: imageData
+                        })
+                    });
+
+                    const result = await response.json();
+                    console.log('Face login response:', result);
+
+                    if (result.success) {
+                        showMessage(result.message, 'success');
+                        hideWebcam();
+                        setTimeout(() => {
+                            window.location.href = '/main_app'; // Redirect to main app page after login
+                        }, 1500);
+                    } else {
+                        showMessage(result.message, 'error');
+                        hideWebcam();
+                        // No need to restart webcam, user can click Face Recognition again
+                    }
+                } catch (error) {
+                    console.error('Face login error:', error);
+                    showMessage('Network error during face login. Please try again.', 'error');
+                    hideWebcam();
+                } finally {
+                    showLoading(false);
+                }
+            };
+
+            const submitLogin = async (formData) => {
+                showLoading(true);
+                
+                try {
+                    const response = await fetch('/login', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showMessage(result.message, 'success');
+                        setTimeout(() => {
+                            window.location.href = '/main_app'; // Redirect to main app page after login
+                        }, 1500);
+                    } else {
+                        showMessage(result.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showMessage('Network error during login. Please try again.', 'error');
+                } finally {
+                    showLoading(false);
+                }
+            };
+
+            const submitRegister = async (formData) => {
+                showLoading(true);
+                
+                try {
+                    const response = await fetch('/register', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showMessage(result.message, 'success');
+                        setTimeout(() => {
+                            showLoginMode(); // Redirect to login after successful registration
+                        }, 2000);
+                    } else {
+                        showMessage(result.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    showMessage('Network error during registration. Please try again.', 'error');
+                } finally {
+                    showLoading(false);
+                }
+            };
+
+            // --- Event Listeners ---
+            loginTab.addEventListener('click', showLoginMode);
+            registerTab.addEventListener('click', showRegisterMode);
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                submitLogin(formData);
+            });
+
+            registerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                submitRegister(formData);
+            });
+
+            faceRegisterBtn.addEventListener('click', () => {
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                
+                if (!email || !password) {
+                    showMessage('Please enter email and password before setting up face registration.', 'error');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    showMessage('Password must be at least 6 characters long.', 'error');
+                    return;
+                }
+                
+                startWebcam(); // Start webcam for capturing multiple images
+            });
+
+            faceLoginBtn.addEventListener('click', () => {
+                startWebcam(); // Start webcam for a single login attempt
+            });
+
+            captureFaceBtn.addEventListener('click', () => {
+                if (currentAuthMode === 'register') {
+                    captureForRegister();
+                }
+                // No action needed for login on this button, as login capture is automatic
+            });
+
+            cancelWebcamBtn.addEventListener('click', () => {
+                hideWebcam();
+                showMessage('Camera cancelled.', 'info');
+            });
+
+            // Add input focus animations
+            const formInputs = document.querySelectorAll('.form-input');
+            formInputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    input.parentElement.style.transform = 'translateY(-2px)';
+                });
+                
+                input.addEventListener('blur', () => {
+                    input.parentElement.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Add button click animations
+            const allButtons = document.querySelectorAll('.btn');
+            allButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    button.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        button.style.transform = '';
+                    }, 150);
+                });
+            });
+
+            // Initialize the page
+            console.log('Dynamic Facial Recognition Authentication System Loaded');
+            
+            // Check for Flask flash messages on page load and display them
+            if (flaskStatusMessage && flaskStatusMessage.children.length > 0) {
+                 flaskStatusMessage.style.display = 'block';
+                 // Hide JS-driven message if Flask messages are present
+                 authStatusMessage.style.display = 'none';
+                 // Set a timeout to fade out Flask messages if desired, similar to JS messages
+                 setTimeout(() => {
+                     flaskStatusMessage.style.opacity = '0';
+                     setTimeout(() => flaskStatusMessage.style.display = 'none', 300); // Allow fade out
+                 }, 5000); // Hide after 5 seconds
+            } else {
+                showMessage(''); // Clear initial message if no Flask messages
+            }
+
+            // Add some dynamic particle movement
+            const particles = document.querySelectorAll('.particle');
+            particles.forEach((particle, index) => {
+                setInterval(() => {
+                    const randomX = Math.random() * 100;
+                    const randomY = Math.random() * 100;
+                    particle.style.left = randomX + '%';
+                    particle.style.top = randomY + '%';
+                }, 8000 + index * 1000);
+            });
+        });
+    </script>
+</body>
+</html>
