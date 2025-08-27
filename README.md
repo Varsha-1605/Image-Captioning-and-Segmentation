@@ -1,3 +1,12 @@
+##Project Demo: Image Captioning + Segmentation
+
+
+## Project Demo: Video Captioning
+https://github.com/Varsha-1605/Real-Time-Video-Captioning-Project
+
+
+
+
 Image Captioning with Attention
 This project implements an image captioning model using a ResNet50-based CNN Encoder and an LSTM Decoder with Bahdanau-style Attention. The model is trained on the COCO 2017 dataset to generate descriptive captions for images.
 
