@@ -9,7 +9,12 @@
 
 Perceptra AI combines advanced image captioning, instance segmentation, and real-time video processing capabilities into a unified system with enterprise-grade security features. Built with custom neural architectures and production-ready deployment considerations.
 
-## Project Demo: Image Captioning + Segmentation
+## 🎥 Project Demo: Image Captioning + Segmentation
+
+https://github.com/user-attachments/assets/d5d4e279-842e-4d98-a7b3-b6760679eeb4
+
+*Complete walkthrough demonstrating image captioning, instance segmentation and biometric authentication features*
+
 
 ## Project Demo: Video Captioning
 https://github.com/Varsha-1605/Real-Time-Video-Captioning-Project
@@ -394,7 +399,6 @@ We welcome contributions! Here's how to get started:
 
 - 🐛 **Bug Reports**: Open an issue with detailed reproduction steps
 - 💡 **Feature Requests**: Describe your use case and proposed solution
-- 💬 **Discussions**: Join our [GitHub Discussions](https://github.com/Varsha-1605/Image-Captioning-and-Segmentation/discussions)
 
 ---
 
